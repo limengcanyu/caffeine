@@ -90,7 +90,7 @@ public final class LocalCacheSelectorCode {
         .beginControlFlow("if (builder.expiresAfterWrite())")
             .addStatement("sb.append('W')")
         .endControlFlow()
-        .beginControlFlow("if (builder.refreshes())")
+        .beginControlFlow("if (builder.refreshAfterWrite())")
             .addStatement("sb.append('R')")
         .endControlFlow();
     return this;
@@ -99,8 +99,7 @@ public final class LocalCacheSelectorCode {
   private LocalCacheSelectorCode selector() {
     block
         .beginControlFlow("try")
-            .addStatement("$T<?> clazz = $T.class.getClassLoader().loadClass(sb.toString())",
-                Class.class, LOCAL_CACHE_FACTORY)
+            .addStatement("Class<?> clazz = Class.forName(sb.toString())")
             .addStatement("$T<?> ctor = clazz.getDeclaredConstructor($T.class, $T.class, $T.class)",
                 Constructor.class, BUILDER, CACHE_LOADER.rawType, TypeName.BOOLEAN)
             .add("@SuppressWarnings($S)\n", "unchecked")

@@ -55,7 +55,7 @@ public final class NodeSelectorCode {
   private NodeSelectorCode expires() {
     block
         .beginControlFlow("if (builder.expiresVariable())")
-            .beginControlFlow("if (builder.refreshes())")
+            .beginControlFlow("if (builder.refreshAfterWrite())")
                 .addStatement("sb.append('A')")
                 .beginControlFlow("if (builder.evicts())")
                     .addStatement("sb.append('W')")
@@ -71,7 +71,7 @@ public final class NodeSelectorCode {
                 .addStatement("sb.append('W')")
             .endControlFlow()
         .endControlFlow()
-        .beginControlFlow("if (builder.refreshes())")
+        .beginControlFlow("if (builder.refreshAfterWrite())")
             .addStatement("sb.append('R')")
         .endControlFlow();
     return this;
@@ -94,8 +94,7 @@ public final class NodeSelectorCode {
   private NodeSelectorCode selector() {
     block
         .beginControlFlow("try")
-            .addStatement("$T<?> clazz = $T.class.getClassLoader().loadClass(sb.toString())",
-                Class.class, NODE_FACTORY.rawType)
+            .addStatement("Class<?> clazz = Class.forName(sb.toString())")
             .add("@SuppressWarnings($S)\n", "unchecked")
             .addStatement("$1T factory = ($1T) clazz.getDeclaredConstructor().newInstance()",
                 NODE_FACTORY)
